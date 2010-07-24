@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2010 David Schlosnagle
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software distributed under the
  * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
  * express or implied. See the License for the specific language governing permissions and
@@ -14,33 +14,37 @@
 
 package com.google.code.arm.sql;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-public class AutoCloseDataSource<S extends DataSource> extends DelegatingDataSource<S> {
+public class AutoCloseDataSource extends DelegatingDataSource<DataSource> {
 
-    public static <S extends DataSource> AutoCloseDataSource<S> from(S delegate) {
+    public static AutoCloseDataSource from(DataSource delegate) {
         if (delegate instanceof AutoCloseDataSource) {
-            @SuppressWarnings("unchecked") AutoCloseDataSource<S> dataSource = (AutoCloseDataSource<S>) delegate;
-            return dataSource;
+            return (AutoCloseDataSource) delegate;
         }
 
-        return new AutoCloseDataSource<S>(delegate);
+        return new AutoCloseDataSource(delegate);
     }
 
-    private AutoCloseDataSource(S delegate) {
+    private AutoCloseDataSource(DataSource delegate) {
         super(delegate);
     }
 
+    /**
+     * @see com.google.code.arm.sql.DelegatingDataSource#getConnection()
+     */
     @Override
-    public AutoCloseConnection<Connection> getConnection() throws SQLException {
+    public AutoCloseConnection getConnection() throws SQLException {
         return AutoCloseConnection.from(super.getConnection());
     }
 
+    /**
+     * @see com.google.code.arm.sql.DelegatingDataSource#getConnection(java.lang.String, java.lang.String)
+     */
     @Override
-    public AutoCloseConnection<Connection> getConnection(String username, String password) throws SQLException {
+    public AutoCloseConnection getConnection(String username, String password) throws SQLException {
         return AutoCloseConnection.from(super.getConnection(username, password));
     }
 }

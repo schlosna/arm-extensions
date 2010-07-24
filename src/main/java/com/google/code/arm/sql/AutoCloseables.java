@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2010 David Schlosnagle
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software distributed under the
  * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
  * express or implied. See the License for the specific language governing permissions and
@@ -28,53 +28,124 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 import javax.sql.PooledConnection;
 
+/**
+ * Utility methods for adapting {@code java.sql.*} types to instances that implement {@link AutoCloseable}. This class
+ * is intended to be statically imported (e.g. {@code import static com.google.code.arm.AutoCloseables.*}).
+ * Where
+ * possible, the instances returned by these methods will return {@link AutoCloseable} instances (e.g.
+ * {@link AutoCloseConnection#prepareStatement(String)} returns an {@link AutoClosePreparedStatement} that implements
+ * {@link AutoCloseable}). Note that all methods throw {@link NullPointerException} for null arguments.
+ */
 public class AutoCloseables {
 
-    public static <T extends Array> AutoCloseArray<T> arm(T array) {
+    private AutoCloseables() {
+    }
+
+    /**
+     * @param array
+     *            array
+     * @return {@link AutoCloseable} {@link Array} instance
+     */
+    public static AutoCloseArray arm(Array array) {
         return AutoCloseArray.from(array);
     }
 
-    public static <T extends Blob> AutoCloseBlob<T> arm(T blob) {
+    /**
+     * @param blob
+     *            blob
+     * @return {@link AutoCloseable} {@link Blob} instance
+     */
+    public static AutoCloseBlob arm(Blob blob) {
         return AutoCloseBlob.from(blob);
     }
 
-    public static <T extends CallableStatement> AutoCloseCallableStatement<T> arm(T callableStatement) {
+    /**
+     * @param callableStatement
+     *            callable statement
+     * @return {@link AutoCloseable} {@link CallableStatement} instance
+     */
+    public static AutoCloseCallableStatement arm(CallableStatement callableStatement) {
         return AutoCloseCallableStatement.from(callableStatement);
     }
 
-    public static <T extends Clob> AutoCloseClob<T> arm(T clob) {
+    /**
+     * @param clob
+     *            clob
+     * @return {@link AutoCloseable} {@link Clob} instance
+     */
+    public static AutoCloseClob arm(Clob clob) {
         return AutoCloseClob.from(clob);
     }
 
-    public static <T extends Connection> AutoCloseConnection<T> arm(T connection) {
+    /**
+     * @param connection
+     *            connection
+     * @return {@link AutoCloseable} {@link Connection} instance
+     */
+    public static AutoCloseConnection arm(Connection connection) {
         return AutoCloseConnection.from(connection);
     }
 
-    public static <T extends DataSource> AutoCloseDataSource<T> arm(T dataSource) {
+    /**
+     * @param dataSource
+     *            data source
+     * @return {@link AutoCloseable} {@link DataSource} instance
+     */
+    public static AutoCloseDataSource arm(DataSource dataSource) {
         return AutoCloseDataSource.from(dataSource);
     }
 
-    public static <T extends NClob> AutoCloseNClob<T> arm(T nClob) {
+    /**
+     * @param nClob
+     *            NClob
+     * @return {@link AutoCloseable} {@link NClob} instance
+     */
+    public static AutoCloseNClob arm(NClob nClob) {
         return AutoCloseNClob.from(nClob);
     }
 
-    public static <T extends PooledConnection> AutoClosePooledConnection<T> arm(T pooledConnection) {
+    /**
+     * @param pooledConnection
+     *            pooled connection
+     * @return {@link AutoCloseable} {@link PooledConnection} instance
+     */
+    public static AutoClosePooledConnection arm(PooledConnection pooledConnection) {
         return AutoClosePooledConnection.from(pooledConnection);
     }
 
-    public static <T extends PreparedStatement> AutoClosePreparedStatement<T> arm(T preparedStatement) {
+    /**
+     * @param preparedStatement
+     *            prepared statement
+     * @return {@link AutoCloseable} {@link PreparedStatement} instance
+     */
+    public static AutoClosePreparedStatement arm(PreparedStatement preparedStatement) {
         return AutoClosePreparedStatement.from(preparedStatement);
     }
 
-    public static <T extends ResultSet> AutoCloseResultSet<T> arm(T resultSet) {
+    /**
+     * @param resultSet
+     *            result set
+     * @return {@link AutoCloseable} {@link ResultSet} instance
+     */
+    public static AutoCloseResultSet arm(ResultSet resultSet) {
         return AutoCloseResultSet.from(resultSet);
     }
 
-    public static <T extends SQLXML> AutoCloseSQLXML<T> arm(T sqlXml) {
+    /**
+     * @param sqlXml
+     *            SQL XML
+     * @return {@link AutoCloseable} {@link SQLXML} instance
+     */
+    public static AutoCloseSQLXML arm(SQLXML sqlXml) {
         return AutoCloseSQLXML.from(sqlXml);
     }
 
-    public static <T extends Statement> AutoCloseStatement<T> arm(T statement) {
+    /**
+     * @param statement
+     *            statement
+     * @return {@link AutoCloseable} {@link Statement} instance
+     */
+    public static AutoCloseStatement arm(Statement statement) {
         return AutoCloseStatement.from(statement);
     }
 }
