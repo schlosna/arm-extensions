@@ -22,19 +22,30 @@ import java.sql.SQLException;
 import java.sql.SQLInput;
 import java.sql.SQLXML;
 
-public class AutoCloseSQLInput<S extends SQLInput> extends DelegatingSQLInput<S> implements SQLInput {
+/**
+ * A {@link SQLInput} that provides {@link AutoCloseable} instances of {@link Array}, {@link Blob}, {@link Clob},
+ * {@link NClob}, and {@link SQLXML}
+ */
+public class AutoCloseSQLInput extends DelegatingSQLInput<SQLInput> implements SQLInput {
 
-    public static <S extends SQLInput> AutoCloseSQLInput<S> from(S delegate) {
-        if (delegate instanceof AutoCloseSQLInput) {
-            @SuppressWarnings("unchecked") AutoCloseSQLInput<S> sqlinput = (AutoCloseSQLInput<S>) delegate;
-            return sqlinput;
+    /**
+     * Returns a wrapped {@link SQLInput} that provides {@link AutoCloseable} instances of {@link Array}, {@link Blob},
+     * {@link Clob}, {@link NClob}, and {@link SQLXML} from the given {@link SQLInput}.
+     * 
+     * @param sqlInput
+     *            the SQLInput
+     * @return the {@link AutoCloseable} {@link SQLInput}
+     */
+    public static AutoCloseSQLInput from(SQLInput sqlInput) {
+        if (sqlInput instanceof AutoCloseSQLInput) {
+            return (AutoCloseSQLInput) sqlInput;
         }
 
-        return new AutoCloseSQLInput<S>(delegate);
+        return new AutoCloseSQLInput(sqlInput);
     }
 
-    private AutoCloseSQLInput(S delegate) {
-        super(delegate);
+    private AutoCloseSQLInput(SQLInput sqlInput) {
+        super(sqlInput);
     }
 
     @Override

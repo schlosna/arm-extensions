@@ -17,18 +17,29 @@ package com.google.code.arm.sql;
 import java.sql.Clob;
 import java.sql.SQLException;
 
+/**
+ * An {@link AutoCloseable} {@link Clob}. When the automatic resource management block construct invokes
+ * {@link #close()}, {@link #free()} will be called on the underlying {@link Clob}.
+ */
 public class AutoCloseClob extends DelegatingClob<Clob> implements Clob, AutoCloseable {
 
-    public static AutoCloseClob from(Clob delegate) {
-        if (delegate instanceof AutoCloseClob) {
-            return (AutoCloseClob) delegate;
+    /**
+     * Returns an {@link AutoCloseable} {@link Clob} from the given {@link Clob}
+     * 
+     * @param clob
+     *            the Clob
+     * @return the {@link AutoCloseable} {@link Clob}
+     */
+    public static AutoCloseClob from(Clob clob) {
+        if (clob instanceof AutoCloseClob) {
+            return (AutoCloseClob) clob;
         }
 
-        return new AutoCloseClob(delegate);
+        return new AutoCloseClob(clob);
     }
 
-    private AutoCloseClob(Clob delegate) {
-        super(delegate);
+    private AutoCloseClob(Clob clob) {
+        super(clob);
     }
 
     /**

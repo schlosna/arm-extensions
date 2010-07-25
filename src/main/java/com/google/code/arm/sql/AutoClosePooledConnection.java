@@ -18,23 +18,34 @@ import java.sql.SQLException;
 
 import javax.sql.PooledConnection;
 
-public class AutoClosePooledConnection extends DelegatingPooledConnection<PooledConnection> implements AutoCloseable {
+/**
+ * An {@link AutoCloseable} {@link PooledConnection}. When the automatic resource management block construct invokes
+ * {@link #close()}, {@code close()} will be called on the underlying {@link PooledConnection}.
+ */
+public class AutoClosePooledConnection extends DelegatingPooledConnection<PooledConnection> implements AutoCloseable, PooledConnection {
 
-    public static AutoClosePooledConnection from(PooledConnection delegate) {
-        if (delegate instanceof AutoClosePooledConnection) {
-            return (AutoClosePooledConnection) delegate;
+    /**
+     * Returns an {@link AutoCloseable} {@link PooledConnection} from the given {@link PooledConnection}
+     * 
+     * @param connection
+     *            the PooledConnection
+     * @return the {@link AutoCloseable} {@link PooledConnection}
+     */
+    public static AutoClosePooledConnection from(PooledConnection connection) {
+        if (connection instanceof AutoClosePooledConnection) {
+            return (AutoClosePooledConnection) connection;
         }
 
-        return new AutoClosePooledConnection(delegate);
+        return new AutoClosePooledConnection(connection);
     }
 
-    private AutoClosePooledConnection(PooledConnection delegate) {
-        super(delegate);
+    private AutoClosePooledConnection(PooledConnection connection) {
+        super(connection);
     }
 
     /**
      * @see AutoCloseable#close()
-     * @see com.google.code.arm.sql.DelegatingPooledConnection#close()
+     * @see PooledConnection#close()
      */
     @Override
     public void close() throws SQLException {
@@ -42,7 +53,7 @@ public class AutoClosePooledConnection extends DelegatingPooledConnection<Pooled
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingPooledConnection#getConnection()
+     * @see PooledConnection#getConnection()
      */
     @Override
     public AutoCloseConnection getConnection() throws SQLException {

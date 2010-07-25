@@ -22,25 +22,36 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLXML;
 
-public class AutoCloseResultSet extends DelegatingResultSet<ResultSet> implements AutoCloseable {
+/**
+ * An {@link AutoCloseable} {@link ResultSet}. When the automatic resource management block construct invokes
+ * {@link #close()}, {@code close()} will be called on the underlying {@link ResultSet}.
+ */
+public class AutoCloseResultSet extends DelegatingResultSet<ResultSet> implements AutoCloseable, ResultSet {
 
-    public static AutoCloseResultSet from(ResultSet delegate) {
-        if (delegate instanceof AutoCloseResultSet) {
-            return (AutoCloseResultSet) delegate;
+    /**
+     * Returns an {@link AutoCloseable} {@link ResultSet} from the given {@link ResultSet}
+     * 
+     * @param resultSet
+     *            the ResultSet
+     * @return the {@link AutoCloseable} {@link ResultSet}
+     */
+    public static AutoCloseResultSet from(ResultSet resultSet) {
+        if (resultSet instanceof AutoCloseResultSet) {
+            return (AutoCloseResultSet) resultSet;
         }
 
-        return new AutoCloseResultSet(delegate);
+        return new AutoCloseResultSet(resultSet);
     }
 
-    private AutoCloseResultSet(ResultSet delegate) {
-        super(delegate);
+    private AutoCloseResultSet(ResultSet resultSet) {
+        super(resultSet);
     }
 
     /**
      * Implements {@link AutoCloseable}
      * 
      * @see AutoCloseable#close()
-     * @see com.google.code.arm.sql.DelegatingResultSet#close()
+     * @see ResultSet#close()
      */
     @Override
     public void close() throws SQLException {
@@ -48,7 +59,7 @@ public class AutoCloseResultSet extends DelegatingResultSet<ResultSet> implement
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingResultSet#getArray(int)
+     * @see ResultSet#getArray(int)
      */
     @Override
     public AutoCloseArray getArray(int columnIndex) throws SQLException {
@@ -57,7 +68,7 @@ public class AutoCloseResultSet extends DelegatingResultSet<ResultSet> implement
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingResultSet#getArray(java.lang.String)
+     * @see ResultSet#getArray(java.lang.String)
      */
     @Override
     public AutoCloseArray getArray(String columnLabel) throws SQLException {
@@ -66,7 +77,7 @@ public class AutoCloseResultSet extends DelegatingResultSet<ResultSet> implement
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingResultSet#getBlob(int)
+     * @see ResultSet#getBlob(int)
      */
     @Override
     public AutoCloseBlob getBlob(int columnIndex) throws SQLException {
@@ -75,7 +86,7 @@ public class AutoCloseResultSet extends DelegatingResultSet<ResultSet> implement
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingResultSet#getBlob(java.lang.String)
+     * @see ResultSet#getBlob(java.lang.String)
      */
     @Override
     public AutoCloseBlob getBlob(String columnLabel) throws SQLException {
@@ -84,7 +95,7 @@ public class AutoCloseResultSet extends DelegatingResultSet<ResultSet> implement
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingResultSet#getClob(int)
+     * @see ResultSet#getClob(int)
      */
     @Override
     public AutoCloseClob getClob(int columnIndex) throws SQLException {
@@ -93,7 +104,7 @@ public class AutoCloseResultSet extends DelegatingResultSet<ResultSet> implement
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingResultSet#getClob(java.lang.String)
+     * @see ResultSet#getClob(java.lang.String)
      */
     @Override
     public AutoCloseClob getClob(String columnLabel) throws SQLException {
@@ -102,7 +113,7 @@ public class AutoCloseResultSet extends DelegatingResultSet<ResultSet> implement
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingResultSet#getNClob(int)
+     * @see ResultSet#getNClob(int)
      */
     @Override
     public AutoCloseNClob getNClob(int columnIndex) throws SQLException {
@@ -111,7 +122,7 @@ public class AutoCloseResultSet extends DelegatingResultSet<ResultSet> implement
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingResultSet#getNClob(java.lang.String)
+     * @see ResultSet#getNClob(java.lang.String)
      */
     @Override
     public AutoCloseNClob getNClob(String columnLabel) throws SQLException {
@@ -120,7 +131,7 @@ public class AutoCloseResultSet extends DelegatingResultSet<ResultSet> implement
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingResultSet#getSQLXML(int)
+     * @see ResultSet#getSQLXML(int)
      */
     @Override
     public AutoCloseSQLXML getSQLXML(int columnIndex) throws SQLException {
@@ -129,7 +140,7 @@ public class AutoCloseResultSet extends DelegatingResultSet<ResultSet> implement
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingResultSet#getSQLXML(java.lang.String)
+     * @see ResultSet#getSQLXML(java.lang.String)
      */
     @Override
     public AutoCloseSQLXML getSQLXML(String columnLabel) throws SQLException {

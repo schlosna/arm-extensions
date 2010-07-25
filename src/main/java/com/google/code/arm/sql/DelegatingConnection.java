@@ -47,6 +47,11 @@ public class DelegatingConnection<S extends Connection> extends DelegatingWrappe
         delegate().clearWarnings();
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.sql.Connection#close()
+     */
     @Override
     public void close() throws SQLException {
         delegate().close();

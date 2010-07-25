@@ -17,22 +17,39 @@ package com.google.code.arm.sql;
 import java.sql.Array;
 import java.sql.SQLException;
 
-public class AutoCloseArray extends DelegatingArray<Array> implements Array, AutoCloseable {
+/**
+ * An {@link AutoCloseable} {@link Array}. When the automatic resource management block construct invokes
+ * {@link #close()}, {@link #free()} will be called on the underlying {@link Array}.
+ */
+public class AutoCloseArray extends DelegatingArray<Array> implements AutoCloseable, Array {
 
-    public static AutoCloseArray from(Array delegate) {
-        if (delegate instanceof AutoCloseArray) {
-            return (AutoCloseArray) delegate;
+    /**
+     * Returns an {@link AutoCloseable} {@link Array} from the given {@link Array}
+     * 
+     * @param array
+     *            the Array
+     * @return the {@link AutoCloseable} {@link Array}
+     */
+    public static AutoCloseArray from(Array array) {
+        if (array instanceof AutoCloseArray) {
+            return (AutoCloseArray) array;
         }
 
-        return new AutoCloseArray(delegate);
-    }
-
-    private AutoCloseArray(Array delegate) {
-        super(delegate);
+        return new AutoCloseArray(array);
     }
 
     /**
-     * Implements {@link AutoCloseable} by invoking {@link #free()} on this instance
+     * Instantiates a new auto close array.
+     * 
+     * @param array
+     *            the array
+     */
+    private AutoCloseArray(Array array) {
+        super(array);
+    }
+
+    /**
+     * Implements {@link AutoCloseable} by invoking {@link #free()} on this instance. {@inheritDoc}
      * 
      * @see java.lang.AutoCloseable#close()
      */

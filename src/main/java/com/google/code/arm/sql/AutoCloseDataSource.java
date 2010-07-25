@@ -14,26 +14,39 @@
 
 package com.google.code.arm.sql;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-public class AutoCloseDataSource extends DelegatingDataSource<DataSource> {
+/**
+ * Wraps a {@link DataSource} so that it provides {@link AutoCloseable} {@link Connection} instances from the
+ * {@link #getConnection()} and {@link #getConnection(String, String)} methods.
+ */
+public class AutoCloseDataSource extends DelegatingDataSource<DataSource> implements DataSource {
 
-    public static AutoCloseDataSource from(DataSource delegate) {
-        if (delegate instanceof AutoCloseDataSource) {
-            return (AutoCloseDataSource) delegate;
+    /**
+     * Returns a wrapped {@link DataSource} that creates {@link AutoCloseable} {@link Connection}s from the given
+     * {@link DataSource}
+     * 
+     * @param dataSource
+     *            the DataSource
+     * @return the {@link AutoCloseDataSource}
+     */
+    public static AutoCloseDataSource from(DataSource dataSource) {
+        if (dataSource instanceof AutoCloseDataSource) {
+            return (AutoCloseDataSource) dataSource;
         }
 
-        return new AutoCloseDataSource(delegate);
+        return new AutoCloseDataSource(dataSource);
     }
 
-    private AutoCloseDataSource(DataSource delegate) {
-        super(delegate);
+    private AutoCloseDataSource(DataSource dataSource) {
+        super(dataSource);
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingDataSource#getConnection()
+     * @see DataSource#getConnection()
      */
     @Override
     public AutoCloseConnection getConnection() throws SQLException {
@@ -41,7 +54,7 @@ public class AutoCloseDataSource extends DelegatingDataSource<DataSource> {
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingDataSource#getConnection(java.lang.String, java.lang.String)
+     * @see DataSource#getConnection(java.lang.String, java.lang.String)
      */
     @Override
     public AutoCloseConnection getConnection(String username, String password) throws SQLException {

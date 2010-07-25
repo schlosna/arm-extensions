@@ -19,28 +19,41 @@ import java.sql.Blob;
 import java.sql.CallableStatement;
 import java.sql.Clob;
 import java.sql.NClob;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLXML;
+import java.sql.Statement;
 
-public class AutoCloseCallableStatement extends DelegatingCallableStatement<CallableStatement> implements CallableStatement, AutoCloseable {
+/**
+ * An {@link AutoCloseable} {@link CallableStatement}. When the automatic resource management block construct invokes
+ * {@link #close()}, {@code close()} will be called on the underlying {@link CallableStatement}.
+ */
+public class AutoCloseCallableStatement extends DelegatingCallableStatement<CallableStatement> implements AutoCloseable, CallableStatement {
 
-    public static AutoCloseCallableStatement from(CallableStatement delegate) {
-        if (delegate instanceof AutoCloseCallableStatement) {
-            return (AutoCloseCallableStatement) delegate;
+    /**
+     * Returns an {@link AutoCloseable} {@link CallableStatement} from the given {@link CallableStatement}
+     * 
+     * @param statement
+     *            the CallableStatement
+     * @return the {@link AutoCloseable} {@link CallableStatement}
+     */
+    public static AutoCloseCallableStatement from(CallableStatement statement) {
+        if (statement instanceof AutoCloseCallableStatement) {
+            return (AutoCloseCallableStatement) statement;
 
         }
-        return new AutoCloseCallableStatement(delegate);
+        return new AutoCloseCallableStatement(statement);
     }
 
-    private AutoCloseCallableStatement(CallableStatement delegate) {
-        super(delegate);
+    private AutoCloseCallableStatement(CallableStatement statement) {
+        super(statement);
     }
 
     /**
      * Implements {@link AutoCloseable}.
      * 
      * @see AutoCloseable#close()
-     * @see com.google.code.arm.sql.DelegatingStatement#close()
+     * @see Statement#close()
      */
     @Override
     public void close() throws SQLException {
@@ -48,7 +61,7 @@ public class AutoCloseCallableStatement extends DelegatingCallableStatement<Call
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingStatement#executeQuery(java.lang.String)
+     * @see Statement#executeQuery(java.lang.String)
      */
     @Override
     public AutoCloseResultSet executeQuery(String sql) throws SQLException {
@@ -56,7 +69,7 @@ public class AutoCloseCallableStatement extends DelegatingCallableStatement<Call
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingStatement#getConnection()
+     * @see Statement#getConnection()
      */
     @Override
     public AutoCloseConnection getConnection() throws SQLException {
@@ -64,7 +77,7 @@ public class AutoCloseCallableStatement extends DelegatingCallableStatement<Call
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingStatement#getGeneratedKeys()
+     * @see Statement#getGeneratedKeys()
      */
     @Override
     public AutoCloseResultSet getGeneratedKeys() throws SQLException {
@@ -72,7 +85,7 @@ public class AutoCloseCallableStatement extends DelegatingCallableStatement<Call
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingStatement#getResultSet()
+     * @see Statement#getResultSet()
      */
     @Override
     public AutoCloseResultSet getResultSet() throws SQLException {
@@ -80,7 +93,7 @@ public class AutoCloseCallableStatement extends DelegatingCallableStatement<Call
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingPreparedStatement#executeQuery()
+     * @see PreparedStatement#executeQuery()
      */
     @Override
     public AutoCloseResultSet executeQuery() throws SQLException {
@@ -88,7 +101,7 @@ public class AutoCloseCallableStatement extends DelegatingCallableStatement<Call
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingCallableStatement#getArray(int)
+     * @see CallableStatement#getArray(int)
      */
     @Override
     public AutoCloseArray getArray(int parameterIndex) throws SQLException {
@@ -97,7 +110,7 @@ public class AutoCloseCallableStatement extends DelegatingCallableStatement<Call
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingCallableStatement#getArray(java.lang.String)
+     * @see CallableStatement#getArray(java.lang.String)
      */
     @Override
     public AutoCloseArray getArray(String parameterName) throws SQLException {
@@ -106,7 +119,7 @@ public class AutoCloseCallableStatement extends DelegatingCallableStatement<Call
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingCallableStatement#getBlob(int)
+     * @see CallableStatement#getBlob(int)
      */
     @Override
     public AutoCloseBlob getBlob(int parameterIndex) throws SQLException {
@@ -115,7 +128,7 @@ public class AutoCloseCallableStatement extends DelegatingCallableStatement<Call
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingCallableStatement#getBlob(java.lang.String)
+     * @see CallableStatement#getBlob(java.lang.String)
      */
     @Override
     public AutoCloseBlob getBlob(String parameterName) throws SQLException {
@@ -124,7 +137,7 @@ public class AutoCloseCallableStatement extends DelegatingCallableStatement<Call
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingCallableStatement#getClob(int)
+     * @see CallableStatement#getClob(int)
      */
     @Override
     public AutoCloseClob getClob(int parameterIndex) throws SQLException {
@@ -134,7 +147,7 @@ public class AutoCloseCallableStatement extends DelegatingCallableStatement<Call
 
     // CallableStatement
     /**
-     * @see com.google.code.arm.sql.DelegatingCallableStatement#getClob(java.lang.String)
+     * @see CallableStatement#getClob(java.lang.String)
      */
     @Override
     public AutoCloseClob getClob(String parameterName) throws SQLException {
@@ -143,7 +156,7 @@ public class AutoCloseCallableStatement extends DelegatingCallableStatement<Call
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingCallableStatement#getNClob(int)
+     * @see CallableStatement#getNClob(int)
      */
     @Override
     public AutoCloseNClob getNClob(int parameterIndex) throws SQLException {
@@ -152,7 +165,7 @@ public class AutoCloseCallableStatement extends DelegatingCallableStatement<Call
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingCallableStatement#getNClob(java.lang.String)
+     * @see CallableStatement#getNClob(java.lang.String)
      */
     @Override
     public AutoCloseNClob getNClob(String parameterName) throws SQLException {
@@ -161,7 +174,7 @@ public class AutoCloseCallableStatement extends DelegatingCallableStatement<Call
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingCallableStatement#getSQLXML(int)
+     * @see CallableStatement#getSQLXML(int)
      */
     @Override
     public AutoCloseSQLXML getSQLXML(int parameterIndex) throws SQLException {
@@ -170,7 +183,7 @@ public class AutoCloseCallableStatement extends DelegatingCallableStatement<Call
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingCallableStatement#getSQLXML(java.lang.String)
+     * @see CallableStatement#getSQLXML(java.lang.String)
      */
     @Override
     public AutoCloseSQLXML getSQLXML(String parameterName) throws SQLException {

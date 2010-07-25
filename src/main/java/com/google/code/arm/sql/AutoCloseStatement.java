@@ -17,24 +17,35 @@ package com.google.code.arm.sql;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class AutoCloseStatement extends DelegatingStatement<Statement> implements AutoCloseable {
+/**
+ * An {@link AutoCloseable} {@link Statement}. When the automatic resource management block construct invokes
+ * {@link #close()}, {@code close()} will be called on the underlying {@link Statement}.
+ */
+public class AutoCloseStatement extends DelegatingStatement<Statement> implements AutoCloseable, Statement {
 
-    public static AutoCloseStatement from(Statement delegate) {
-        if (delegate instanceof AutoCloseStatement) {
-            return (AutoCloseStatement) delegate;
+    /**
+     * Returns an {@link AutoCloseable} {@link Statement} from the given {@link Statement}
+     * 
+     * @param statement
+     *            the Statement
+     * @return the {@link AutoCloseable} {@link Statement}
+     */
+    public static AutoCloseStatement from(Statement statement) {
+        if (statement instanceof AutoCloseStatement) {
+            return (AutoCloseStatement) statement;
         }
 
-        return new AutoCloseStatement(delegate);
+        return new AutoCloseStatement(statement);
     }
 
-    private AutoCloseStatement(Statement delegate) {
-        super(delegate);
+    private AutoCloseStatement(Statement statement) {
+        super(statement);
     }
 
     /**
-     * Closes the delegate statement and implements {@link AutoCloseable}.
+     * Closes the wrapped statement and implements {@link AutoCloseable}.
      * 
-     * @see com.google.code.arm.sql.DelegatingStatement#close()
+     * @see Statement#close()
      */
     @Override
     public void close() throws SQLException {
@@ -42,7 +53,7 @@ public class AutoCloseStatement extends DelegatingStatement<Statement> implement
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingStatement#executeQuery(java.lang.String)
+     * @see Statement#executeQuery(java.lang.String)
      */
     @Override
     public AutoCloseResultSet executeQuery(String sql) throws SQLException {
@@ -50,7 +61,7 @@ public class AutoCloseStatement extends DelegatingStatement<Statement> implement
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingStatement#getConnection()
+     * @see Statement#getConnection()
      */
     @Override
     public AutoCloseConnection getConnection() throws SQLException {
@@ -58,7 +69,7 @@ public class AutoCloseStatement extends DelegatingStatement<Statement> implement
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingStatement#getGeneratedKeys()
+     * @see Statement#getGeneratedKeys()
      */
     @Override
     public AutoCloseResultSet getGeneratedKeys() throws SQLException {
@@ -66,7 +77,7 @@ public class AutoCloseStatement extends DelegatingStatement<Statement> implement
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingStatement#getResultSet()
+     * @see Statement#getResultSet()
      */
     @Override
     public AutoCloseResultSet getResultSet() throws SQLException {

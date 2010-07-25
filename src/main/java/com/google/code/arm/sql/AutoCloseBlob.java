@@ -17,18 +17,29 @@ package com.google.code.arm.sql;
 import java.sql.Blob;
 import java.sql.SQLException;
 
-public class AutoCloseBlob extends DelegatingBlob<Blob> implements Blob, AutoCloseable {
+/**
+ * An {@link AutoCloseable} {@link Blob}. When the automatic resource management block construct invokes
+ * {@link #close()}, {@link #free()} will be called on the underlying {@link Blob}.
+ */
+public class AutoCloseBlob extends DelegatingBlob<Blob> implements AutoCloseable, Blob {
 
-    public static AutoCloseBlob from(Blob delegate) {
-        if (delegate instanceof AutoCloseBlob) {
-            return (AutoCloseBlob) delegate;
+    /**
+     * Returns an {@link AutoCloseable} {@link Blob} from the given {@link Blob}
+     * 
+     * @param blob
+     *            the Blob
+     * @return the {@link AutoCloseable} {@link Blob}
+     */
+    public static AutoCloseBlob from(Blob blob) {
+        if (blob instanceof AutoCloseBlob) {
+            return (AutoCloseBlob) blob;
         }
 
-        return new AutoCloseBlob(delegate);
+        return new AutoCloseBlob(blob);
     }
 
-    private AutoCloseBlob(Blob delegate) {
-        super(delegate);
+    private AutoCloseBlob(Blob blob) {
+        super(blob);
     }
 
     /**

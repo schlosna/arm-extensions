@@ -17,25 +17,49 @@ package com.google.code.arm.sql;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+/**
+ * An {@link AutoCloseable} {@link Connection} to a database. When the automatic resource management block construct
+ * invokes {@link #close()}, {@code close()} will be called on the underlying {@link Connection}.
+ * <p>
+ * It is <b>strongly recommended</b> that an application explicitly commits or rolls back an active transaction prior to
+ * calling the {@link #close()} method and prior to {@link #close()} being invoked automatically by the automatic
+ * resource management block construct. If the {@link #close()} method is called and there is an active transaction, the
+ * results are implementation-defined.
+ * </p>
+ * 
+ * @see AutoCloseDataSource#getConnection()
+ * @see AutoCloseDriverManager#getConnection(String)
+ */
 public class AutoCloseConnection extends DelegatingConnection<Connection> implements AutoCloseable {
 
-    public static AutoCloseConnection from(Connection delegate) {
-        if (delegate instanceof AutoCloseConnection) {
-            return (AutoCloseConnection) delegate;
+    /**
+     * Returns an {@link AutoCloseable} {@link Connection} from the given {@link Connection}
+     * 
+     * @param connection
+     *            the Connection
+     * @return the {@link AutoCloseable} {@link Connection}
+     */
+    public static AutoCloseConnection from(Connection connection) {
+        if (connection instanceof AutoCloseConnection) {
+            return (AutoCloseConnection) connection;
         }
 
-        return new AutoCloseConnection(delegate);
+        return new AutoCloseConnection(connection);
     }
 
-    private AutoCloseConnection(Connection delegate) {
-        super(delegate);
+    private AutoCloseConnection(Connection connection) {
+        super(connection);
     }
 
     /**
-     * Implements {@link AutoCloseable}
+     * <p>
+     * It is <b>strongly recommended</b> that an application explicitly commits or rolls back an active transaction
+     * prior to calling the {@link #close()} method. If the {@link #close()} method is called and there is an active
+     * transaction, the results are implementation-defined.
+     * </p>
      * 
      * @see AutoCloseable#close()
-     * @see com.google.code.arm.sql.DelegatingConnection#close()
+     * @see Connection#close()
      */
     @Override
     public void close() throws SQLException {
@@ -43,7 +67,7 @@ public class AutoCloseConnection extends DelegatingConnection<Connection> implem
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingConnection#createArrayOf(java.lang.String, java.lang.Object[])
+     * @see Connection#createArrayOf(java.lang.String, java.lang.Object[])
      */
     @Override
     public AutoCloseArray createArrayOf(String typeName, Object[] elements) throws SQLException {
@@ -51,7 +75,7 @@ public class AutoCloseConnection extends DelegatingConnection<Connection> implem
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingConnection#createBlob()
+     * @see Connection#createBlob()
      */
     @Override
     public AutoCloseBlob createBlob() throws SQLException {
@@ -59,7 +83,7 @@ public class AutoCloseConnection extends DelegatingConnection<Connection> implem
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingConnection#createClob()
+     * @see Connection#createClob()
      */
     @Override
     public AutoCloseClob createClob() throws SQLException {
@@ -67,7 +91,7 @@ public class AutoCloseConnection extends DelegatingConnection<Connection> implem
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingConnection#createNClob()
+     * @see Connection#createNClob()
      */
     @Override
     public AutoCloseNClob createNClob() throws SQLException {
@@ -75,7 +99,7 @@ public class AutoCloseConnection extends DelegatingConnection<Connection> implem
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingConnection#createSQLXML()
+     * @see Connection#createSQLXML()
      */
     @Override
     public AutoCloseSQLXML createSQLXML() throws SQLException {
@@ -83,7 +107,7 @@ public class AutoCloseConnection extends DelegatingConnection<Connection> implem
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingConnection#createStatement()
+     * @see Connection#createStatement()
      */
     @Override
     public AutoCloseStatement createStatement() throws SQLException {
@@ -91,7 +115,7 @@ public class AutoCloseConnection extends DelegatingConnection<Connection> implem
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingConnection#createStatement(int, int)
+     * @see Connection#createStatement(int, int)
      */
     @Override
     public AutoCloseStatement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException {
@@ -99,7 +123,7 @@ public class AutoCloseConnection extends DelegatingConnection<Connection> implem
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingConnection#createStatement(int, int, int)
+     * @see Connection#createStatement(int, int, int)
      */
     @Override
     public AutoCloseStatement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
@@ -107,7 +131,7 @@ public class AutoCloseConnection extends DelegatingConnection<Connection> implem
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingConnection#prepareCall(java.lang.String)
+     * @see Connection#prepareCall(java.lang.String)
      */
     @Override
     public AutoCloseCallableStatement prepareCall(String sql) throws SQLException {
@@ -115,7 +139,7 @@ public class AutoCloseConnection extends DelegatingConnection<Connection> implem
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingConnection#prepareCall(java.lang.String, int, int)
+     * @see Connection#prepareCall(java.lang.String, int, int)
      */
     @Override
     public AutoCloseCallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
@@ -123,7 +147,7 @@ public class AutoCloseConnection extends DelegatingConnection<Connection> implem
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingConnection#prepareCall(java.lang.String, int, int, int)
+     * @see Connection#prepareCall(java.lang.String, int, int, int)
      */
     @Override
     public AutoCloseCallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
@@ -131,7 +155,7 @@ public class AutoCloseConnection extends DelegatingConnection<Connection> implem
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingConnection#prepareStatement(java.lang.String)
+     * @see Connection#prepareStatement(java.lang.String)
      */
     @Override
     public AutoClosePreparedStatement prepareStatement(String sql) throws SQLException {
@@ -139,7 +163,7 @@ public class AutoCloseConnection extends DelegatingConnection<Connection> implem
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingConnection#prepareStatement(java.lang.String, int)
+     * @see Connection#prepareStatement(java.lang.String, int)
      */
     @Override
     public AutoClosePreparedStatement prepareStatement(String sql, int autoGeneratedKeys) throws SQLException {
@@ -147,7 +171,7 @@ public class AutoCloseConnection extends DelegatingConnection<Connection> implem
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingConnection#prepareStatement(java.lang.String, int, int)
+     * @see Connection#prepareStatement(java.lang.String, int, int)
      */
     @Override
     public AutoClosePreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
@@ -155,7 +179,7 @@ public class AutoCloseConnection extends DelegatingConnection<Connection> implem
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingConnection#prepareStatement(java.lang.String, int, int, int)
+     * @see Connection#prepareStatement(java.lang.String, int, int, int)
      */
     @Override
     public AutoClosePreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
@@ -163,7 +187,7 @@ public class AutoCloseConnection extends DelegatingConnection<Connection> implem
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingConnection#prepareStatement(java.lang.String, int[])
+     * @see Connection#prepareStatement(java.lang.String, int[])
      */
     @Override
     public AutoClosePreparedStatement prepareStatement(String sql, int[] columnIndexes) throws SQLException {
@@ -171,7 +195,7 @@ public class AutoCloseConnection extends DelegatingConnection<Connection> implem
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingConnection#prepareStatement(java.lang.String, java.lang.String[])
+     * @see Connection#prepareStatement(java.lang.String, java.lang.String[])
      */
     @Override
     public AutoClosePreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {

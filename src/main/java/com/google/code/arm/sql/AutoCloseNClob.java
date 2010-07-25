@@ -17,18 +17,29 @@ package com.google.code.arm.sql;
 import java.sql.NClob;
 import java.sql.SQLException;
 
-public class AutoCloseNClob extends DelegatingNClob<NClob> implements AutoCloseable {
+/**
+ * An {@link AutoCloseable} {@link NClob}. When the automatic resource management block construct invokes
+ * {@link #close()}, {@link #free()} will be called on the underlying {@link NClob}.
+ */
+public class AutoCloseNClob extends DelegatingNClob<NClob> implements AutoCloseable, NClob {
 
-    public static AutoCloseNClob from(NClob delegate) {
-        if (delegate instanceof AutoCloseNClob) {
-            return (AutoCloseNClob) delegate;
+    /**
+     * Returns an {@link AutoCloseable} {@link NClob} from the given {@link NClob}
+     * 
+     * @param nClob
+     *            the NClob
+     * @return the {@link AutoCloseable} {@link NClob}
+     */
+    public static AutoCloseNClob from(NClob nClob) {
+        if (nClob instanceof AutoCloseNClob) {
+            return (AutoCloseNClob) nClob;
         }
 
-        return new AutoCloseNClob(delegate);
+        return new AutoCloseNClob(nClob);
     }
 
-    private AutoCloseNClob(NClob delegate) {
-        super(delegate);
+    private AutoCloseNClob(NClob nClob) {
+        super(nClob);
     }
 
     /**

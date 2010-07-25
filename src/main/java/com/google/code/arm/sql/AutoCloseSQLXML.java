@@ -17,18 +17,29 @@ package com.google.code.arm.sql;
 import java.sql.SQLException;
 import java.sql.SQLXML;
 
+/**
+ * An {@link AutoCloseable} {@link SQLXML}. When the automatic resource management block construct invokes
+ * {@link #close()}, {@link #free()} will be called on the underlying {@link SQLXML}.
+ */
 public class AutoCloseSQLXML extends DelegatingSQLXML<SQLXML> implements AutoCloseable {
 
-    public static AutoCloseSQLXML from(SQLXML delegate) {
-        if (delegate instanceof AutoCloseSQLXML) {
-            return (AutoCloseSQLXML) delegate;
+    /**
+     * Returns an {@link AutoCloseable} {@link SQLXML} from the given {@link SQLXML}
+     * 
+     * @param sqlxml
+     *            the SQLXML
+     * @return the {@link AutoCloseable} {@link SQLXML}
+     */
+    public static AutoCloseSQLXML from(SQLXML sqlxml) {
+        if (sqlxml instanceof AutoCloseSQLXML) {
+            return (AutoCloseSQLXML) sqlxml;
         }
 
-        return new AutoCloseSQLXML(delegate);
+        return new AutoCloseSQLXML(sqlxml);
     }
 
-    private AutoCloseSQLXML(SQLXML delegate) {
-        super(delegate);
+    private AutoCloseSQLXML(SQLXML sqlxml) {
+        super(sqlxml);
     }
 
     /**

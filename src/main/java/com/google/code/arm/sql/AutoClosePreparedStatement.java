@@ -16,24 +16,36 @@ package com.google.code.arm.sql;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 
-public class AutoClosePreparedStatement extends DelegatingPreparedStatement<PreparedStatement> implements PreparedStatement, AutoCloseable {
+/**
+ * An {@link AutoCloseable} {@link PreparedStatement}. When the automatic resource management block construct invokes
+ * {@link #close()}, {@code close()} will be called on the underlying {@link PreparedStatement}.
+ */
+public class AutoClosePreparedStatement extends DelegatingPreparedStatement<PreparedStatement> implements AutoCloseable, PreparedStatement {
 
-    public static AutoClosePreparedStatement from(PreparedStatement delegate) {
-        if (delegate instanceof AutoClosePreparedStatement) {
-            return (AutoClosePreparedStatement) delegate;
+    /**
+     * Returns an {@link AutoCloseable} {@link PreparedStatement} from the given {@link PreparedStatement}
+     * 
+     * @param statement
+     *            the PreparedStatement
+     * @return the {@link AutoCloseable} {@link PreparedStatement}
+     */
+    public static AutoClosePreparedStatement from(PreparedStatement statement) {
+        if (statement instanceof AutoClosePreparedStatement) {
+            return (AutoClosePreparedStatement) statement;
         }
 
-        return new AutoClosePreparedStatement(delegate);
+        return new AutoClosePreparedStatement(statement);
     }
 
-    private AutoClosePreparedStatement(PreparedStatement delegate) {
-        super(delegate);
+    private AutoClosePreparedStatement(PreparedStatement statement) {
+        super(statement);
     }
 
     /**
      * @see AutoCloseable#close()
-     * @see com.google.code.arm.sql.DelegatingStatement#close()
+     * @see Statement#close()
      */
     @Override
     public void close() throws SQLException {
@@ -41,7 +53,7 @@ public class AutoClosePreparedStatement extends DelegatingPreparedStatement<Prep
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingStatement#executeQuery(java.lang.String)
+     * @see Statement#executeQuery(java.lang.String)
      */
     @Override
     public AutoCloseResultSet executeQuery(String sql) throws SQLException {
@@ -49,7 +61,7 @@ public class AutoClosePreparedStatement extends DelegatingPreparedStatement<Prep
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingStatement#getConnection()
+     * @see Statement#getConnection()
      */
     @Override
     public AutoCloseConnection getConnection() throws SQLException {
@@ -57,7 +69,7 @@ public class AutoClosePreparedStatement extends DelegatingPreparedStatement<Prep
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingStatement#getGeneratedKeys()
+     * @see Statement#getGeneratedKeys()
      */
     @Override
     public AutoCloseResultSet getGeneratedKeys() throws SQLException {
@@ -65,7 +77,7 @@ public class AutoClosePreparedStatement extends DelegatingPreparedStatement<Prep
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingStatement#getResultSet()
+     * @see Statement#getResultSet()
      */
     @Override
     public AutoCloseResultSet getResultSet() throws SQLException {
@@ -73,7 +85,7 @@ public class AutoClosePreparedStatement extends DelegatingPreparedStatement<Prep
     }
 
     /**
-     * @see com.google.code.arm.sql.DelegatingPreparedStatement#executeQuery()
+     * @see PreparedStatement#executeQuery()
      */
     @Override
     public AutoCloseResultSet executeQuery() throws SQLException {
